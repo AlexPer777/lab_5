@@ -1,0 +1,3 @@
+Main.collection
+AddCommand
+Main -> AddCommand -> Main.collection

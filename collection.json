@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "name": "Aleksei",
+    "coordinates": {
+      "x": 463,
+      "y": 242
+    },
+    "creationDate": "2026-03-10T09:19:15.358829",
+    "realHero": true,
+    "hasToothpick": false,
+    "impactSpeed": 653,
+    "weaponType": "AXE",
+    "mood": "RAGE",
+    "car": {
+      "name": "Mini",
+      "cool": false
+    }
+  },
+  {
+    "id": 2,
+    "name": "Frog_e",
+    "coordinates": {
+      "x": 5324,
+      "y": 6435
+    },
+    "creationDate": "2026-03-10T09:19:42.898579",
+    "realHero": true,
+    "hasToothpick": true,
+    "impactSpeed": 532,
+    "weaponType": "RIFLE",
+    "mood": "CALM",
+    "car": {
+      "name": "ABCD",
+      "cool": false
+    }
+  }
+]
