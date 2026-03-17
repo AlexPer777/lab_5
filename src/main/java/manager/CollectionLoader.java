@@ -14,7 +14,7 @@ import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.util.Vector;
 
-public class LoadCollection {
+public class CollectionLoader {
     Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
             .setPrettyPrinting()
@@ -26,15 +26,11 @@ public class LoadCollection {
             int maxId = 0;
             if (humanBeings != null) {
                 for (HumanBeing humanBeing : humanBeings) {
-                    try{
                         Main.collection.add(humanBeing);
                         Main.IDs.put(humanBeing.getId(), humanBeing);
                         if (humanBeing.getId() > maxId) {
                             maxId = humanBeing.getId();
                         }
-                    } catch (Exception e){
-                        System.out.println("Пропущен поврежденный элемент: " + e.getMessage());
-                    }
                 }
                 HumanBeing.setIdCounter(maxId + 1);
             }

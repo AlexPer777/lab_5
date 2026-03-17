@@ -1,7 +1,7 @@
 package org.example;
 
 import manager.InputManager;
-import manager.LoadCollection;
+import manager.CollectionLoader;
 import model.HumanBeing;
 import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
@@ -21,7 +21,7 @@ public class Main {
             System.exit(0);
         }
         FILE_NAME = args[0];
-        LoadCollection LC = new LoadCollection();
+        CollectionLoader LC = new CollectionLoader();
         LC.loadCollection(args[0]);
         System.out.println("Program is running");
         InputManager.startInput();
