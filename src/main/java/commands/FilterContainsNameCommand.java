@@ -3,26 +3,15 @@ package commands;
 import exceptions.InputException;
 import interfaces.Executable;
 import interfaces.Validatable;
-import model.HumanBeing;
-import org.example.Main;
+import manager.CollectionManager;
 
 public class FilterContainsNameCommand extends Command implements Executable, Validatable {
-    public FilterContainsNameCommand(Object parameter) {
-        super(parameter);
+    public FilterContainsNameCommand(CollectionManager collectionManager) {
+        super(collectionManager);
     }
     @Override
     public void execute() {
-        String substring = (String) parameter;
-        int count = 0;
-        for (HumanBeing human : Main.collection) {
-            if (human.getName().contains(substring)) {
-                System.out.println(human);
-                count++;
-            }
-        }
-        if (count == 0) {
-            System.out.println("Элементы не найдены.");
-        }
+        collectionManager.FilterContainsName((String) parameter);
     }
     @Override
     public boolean isValid() {

@@ -3,27 +3,15 @@ package commands;
 import exceptions.InputException;
 import interfaces.Executable;
 import interfaces.Validatable;
-import manager.InputValidator;
-import model.Car;
-import model.HumanBeing;
-import org.example.Main;
+import manager.CollectionManager;
 
 public class CountGreaterThanCarCommand extends Command implements Executable, Validatable {
-    public CountGreaterThanCarCommand(Object parameter) {
-        super(parameter);
+    public CountGreaterThanCarCommand(CollectionManager collectionManager) {
+        super(collectionManager);
     }
     @Override
     public void execute() {
-        System.out.println("Введите данные машины для сравнения:");
-        Car inputCar = InputValidator.readCar();
-        int count = 0;
-        for (HumanBeing human : Main.collection) {
-            Car car = human.getCar();
-            if (car != null && car.compareTo(inputCar) > 0) {
-                count++;
-            }
-        }
-        System.out.println("Количество элементов: " + count);
+        collectionManager.countGreaterThanCar();
     }
     @Override
     public boolean isValid() {

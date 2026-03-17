@@ -111,6 +111,23 @@ public class HumanBeing implements Comparable<HumanBeing>{
     public static void setIdCounter(int id) {
         idCounter = id;
     }
+    @Override
+    public String toString() {
+        return "HumanBeing{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", coordinatesX=" + coordinates.getX() +
+                ", coordinatesY=" + coordinates.getY() +
+                ", creationDate=" + creationDate +
+                ", realHero=" + realHero +
+                ", hasToothpick=" + hasToothpick +
+                ", impactSpeed=" + impactSpeed +
+                ", mood='" + mood + '\'' +
+                ", weaponType=" + weaponType +
+                ", carName=" + car.getName() +
+                ", carCool=" + car.getCool() +
+                '}';
+    }
 }
 
 

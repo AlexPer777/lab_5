@@ -3,26 +3,15 @@ package commands;
 import exceptions.InputException;
 import interfaces.Executable;
 import interfaces.Validatable;
-import model.HumanBeing;
-import org.example.Main;
+import manager.CollectionManager;
 
 public class FilterStartsWithNameCommand extends Command implements Executable, Validatable {
-    public FilterStartsWithNameCommand(Object parameter) {
-        super(parameter);
+    public FilterStartsWithNameCommand(CollectionManager collectionManager) {
+        super(collectionManager);
     }
     @Override
     public void execute() {
-        String prefix = (String) parameter;
-        int count = 0;
-        for (HumanBeing human : Main.collection) {
-            if (human.getName().startsWith(prefix)) {
-                System.out.println(human);
-                count++;
-            }
-        }
-        if (count == 0) {
-            System.out.println("Элементы не найдены.");
-        }
+        collectionManager.FilterStartsWithName((String) parameter);
     }
     @Override
     public boolean isValid() {

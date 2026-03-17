@@ -1,19 +1,20 @@
 package commands;
 
-import interfaces.Executable;
-import interfaces.Validatable;
+import manager.CollectionManager;
 
-public class Command implements Executable, Validatable {
-    public Object parameter;
-    public Command(Object parameter) {
+public abstract class Command {
+
+    protected Object parameter;
+    protected final CollectionManager collectionManager;
+
+    public Command(CollectionManager collectionManager) {
+        this.collectionManager = collectionManager;
+    }
+
+    public void setParameter(Object parameter) {
         this.parameter = parameter;
     }
-    @Override
-    public boolean isValid() {
-        return true;
-    }
-    @Override
-    public void execute() {
-        System.out.println("Command not found");
-    }
+
+    public abstract boolean isValid();
+    public abstract void execute();
 }

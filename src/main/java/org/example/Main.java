@@ -1,29 +1,34 @@
 package org.example;
 
-import manager.InputManager;
-import manager.LoadCollection;
-import model.HumanBeing;
+import manager.*;
+
 import java.io.FileNotFoundException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Vector;
+import java.util.Scanner;
 
 public class Main {
-    public static ArrayList<String> commandsList = new ArrayList<>();
-    public static Vector<HumanBeing> collection = new Vector<>();
-    public static LocalDateTime initTime = LocalDateTime.now();
-    public static HashMap<Integer, HumanBeing> IDs = new HashMap<>();
-    public static String FILE_NAME;
     public static void main(String[] args) throws FileNotFoundException {
         if (args.length == 0) {
             System.out.println("Не указан файл");
-            System.exit(0);
+            return;
         }
-        FILE_NAME = args[0];
-        LoadCollection LC = new LoadCollection();
-        LC.loadCollection(args[0]);
+        CollectionManager collectionManager = new CollectionManager();
+        CollectionLoader loader = new CollectionLoader(collectionManager);
+        loader.loadCollection(args[0]);
+        CommandManager commandManager = new CommandManager(collectionManager);
+        Reader reader = new Reader(collectionManager, commandManager);
+        commandManager.setReader(reader);
+        commandManager.initCommands();
+        commandManager.initScriptCommand();
         System.out.println("Program is running");
-        InputManager.startInput();
+        Scanner scanner = new Scanner(System.in);
+
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine();
+            if (line == null || line.trim().isEmpty()) {
+                continue;
+            }
+            reader.getLine(line);
+        }
+        System.out.println("EOF detected. Program terminated");
     }
 }

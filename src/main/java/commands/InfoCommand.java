@@ -4,11 +4,10 @@ import exceptions.InputException;
 import interfaces.Executable;
 import interfaces.Validatable;
 import manager.CollectionManager;
-import org.example.Main;
 
 public class InfoCommand extends Command implements Executable, Validatable {
-    public InfoCommand(Object parameter) {
-        super(parameter);
+    public InfoCommand(CollectionManager collectionManager) {
+        super(collectionManager);
     }
     @Override
     public boolean isValid() {
@@ -25,9 +24,7 @@ public class InfoCommand extends Command implements Executable, Validatable {
     }
     @Override
     public void execute() {
-        Main.commandsList.add("info");
-        System.out.println("Information about collections");
-        CollectionManager.info();
+        collectionManager.info();
     }
 
 }

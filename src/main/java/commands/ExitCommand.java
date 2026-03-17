@@ -3,13 +3,15 @@ package commands;
 import exceptions.InputException;
 import interfaces.Executable;
 import interfaces.Validatable;
-import org.example.Main;
-
-import java.util.InputMismatchException;
+import manager.CollectionManager;
 
 public class ExitCommand extends Command implements Executable, Validatable {
-    public ExitCommand(Object parameter) {
-        super(parameter);
+    public ExitCommand(CollectionManager collectionManager) {
+        super(collectionManager);
+    }
+    @Override
+    public void execute() {
+        collectionManager.exit();
     }
     @Override
     public boolean isValid() {
@@ -24,11 +26,5 @@ public class ExitCommand extends Command implements Executable, Validatable {
             System.out.println("Invalid argument");
             return false;
         }
-    }
-    @Override
-    public void execute() {
-        Main.commandsList.add("exit");
-        System.out.println("Exit Command");
-        System.exit(0);
     }
 }

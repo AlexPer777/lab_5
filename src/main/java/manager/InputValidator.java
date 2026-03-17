@@ -11,7 +11,7 @@ public class InputValidator {
             System.out.println("Введите name:");
             String name = scanner.nextLine();
             if (name == null || name.isBlank()) {
-                System.out.println("Ошибка: имя не может быть пустым.");
+                System.out.println("Ошибка: имя не может быть пустым");
             } else {
                 return name;
             }
@@ -25,7 +25,7 @@ public class InputValidator {
             if (input.equalsIgnoreCase("true") || input.equalsIgnoreCase("false")) {
                 return Boolean.parseBoolean(input);
             }
-            System.out.println("Ошибка ввода. Введите true или false.");
+            System.out.println("Ошибка ввода. Введите true или false");
         }
     }
 
@@ -39,7 +39,7 @@ public class InputValidator {
                 }
                 return value;
             } catch (Exception e) {
-                System.out.println("Ошибка ввода. Попробуйте снова.");
+                System.out.println("Ошибка ввода. Попробуйте снова");
             }
         }
     }
@@ -55,7 +55,7 @@ public class InputValidator {
                 y = Long.parseLong(scanner.nextLine());
                 return new Coordinates(x, y);
             } catch (Exception e) {
-                System.out.println("Ошибка координат. Попробуйте снова.");
+                System.out.println("Ошибка координат. Попробуйте снова");
             }
         }
     }

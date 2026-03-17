@@ -4,11 +4,14 @@ import exceptions.InputException;
 import interfaces.Executable;
 import interfaces.Validatable;
 import manager.CollectionManager;
-import org.example.Main;
 
 public class ClearCommand extends Command implements Executable, Validatable {
-    public ClearCommand(Object parameter) {
-        super(parameter);
+    public ClearCommand(CollectionManager collectionManager) {
+        super(collectionManager);
+    }
+    @Override
+    public void execute() {
+        collectionManager.clear();
     }
     @Override
     public boolean isValid() {
@@ -22,11 +25,5 @@ public class ClearCommand extends Command implements Executable, Validatable {
             System.out.println(e.getMessage());
             return false;
         }
-    }
-    @Override
-    public void execute() {
-        Main.commandsList.add("clear");
-        System.out.println("Clear command executed successfully");
-        CollectionManager.clear();
     }
 }

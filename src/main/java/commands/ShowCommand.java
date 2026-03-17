@@ -4,16 +4,14 @@ import exceptions.InputException;
 import interfaces.Executable;
 import interfaces.Validatable;
 import manager.CollectionManager;
-import model.HumanBeing;
-import org.example.Main;
 
 public class ShowCommand extends Command implements Executable, Validatable {
-    public ShowCommand(Object parameter) {
-        super(parameter);
+    public ShowCommand(CollectionManager collectionManager) {
+        super(collectionManager);
     }
     @Override
     public boolean isValid() {
-        if (Main.collection.size() == 0) {
+        if (collectionManager.collection.isEmpty()) {
             System.out.println("Collection doesn't have elements!");
         }
         try {
@@ -29,11 +27,6 @@ public class ShowCommand extends Command implements Executable, Validatable {
     }
     @Override
     public void execute() {
-        Main.commandsList.add("show");
-        for (HumanBeing humanBeing : Main.collection) {
-            System.out.println(Main.collection.indexOf(humanBeing));
-            CollectionManager.show(humanBeing);
-            System.out.println();
-        }
+        collectionManager.show();
     }
 }
