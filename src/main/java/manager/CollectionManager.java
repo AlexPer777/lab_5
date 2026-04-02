@@ -72,9 +72,6 @@ filter_starts_with_name name : вывести элементы, значение
             System.out.println("Ошибка сохранения файла");
         }
     }
-    public  Vector<HumanBeing> getCollection() {
-        return collection;
-    }
     public void add(Object parameter) {
         HumanBeing human;
         if (parameter != null && parameter.toString().startsWith("{")) {
@@ -112,24 +109,16 @@ filter_starts_with_name name : вывести элементы, значение
             System.out.println("Recursion detected! Script already running: " + fileName);
             return;
         }
-
         try (Scanner fileScanner = new Scanner(new FileInputStream(fileName))) {
-
             controller.pushScript(fileName);
-
             while (fileScanner.hasNextLine()) {
                 String line = fileScanner.nextLine().trim();
-
                 if (line.isEmpty()) continue;
-
                 System.out.println(">> " + line);
-
                 reader.getLine(line);
             }
-
         } catch (FileNotFoundException e) {
             System.out.println("File not found: " + fileName);
-
         } finally {
             controller.popScript(fileName);
         }

@@ -1,7 +1,5 @@
 package org.example;
-
 import manager.*;
-
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
