@@ -1,9 +1,13 @@
-help
-execute_script script.txt
-
-add {alex 2424 true }
-
 add
-alex
-2414
+Alex
+67
+67
 true
+true
+67
+axe
+sorrow
+myu
+save
+info
+show

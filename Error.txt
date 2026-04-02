@@ -4,9 +4,7 @@
 СДЕЛАНО: инкапсуляция
 СДЕЛАНО: пройтись по классам и определить кто за какие методы ответственен
 СДЕЛАНО: убрать клиентские функции из execute команд: до execute мы считываем все необходимые данные и формируем “запрос”, передаем его в execute - там бизнес логика и формирование “response” - передача его клиентской части - вывод респонса в консоль
-
-
-1) add в execute-script:
+СДЕЛАНО: add, remove_greater, update id в execute-script:
 Неправильно: add {Alex 67 67 true true 67 axe sorrow myu true}
 Правильно:
 add
@@ -21,4 +19,5 @@ sorrow
 myu
 true
 
-2) Проблемы класса Command из-за передачи parameter в команды например AddCommand execute: collectionManager.add(parameter);
+Есть проблема:
+1) Проблемы класса Command из-за передачи parameter в команды например AddCommand execute: collectionManager.add(parameter);
