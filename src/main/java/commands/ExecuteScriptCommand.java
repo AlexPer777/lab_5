@@ -5,23 +5,18 @@ import manager.Reader;
 
 public class ExecuteScriptCommand extends Command {
 
-    private final CollectionManager collectionManager;
-    private Reader reader;
+    private final Reader reader;
 
     public ExecuteScriptCommand(CollectionManager collectionManager, Reader reader) {
         super(collectionManager);
-        this.collectionManager = collectionManager;
         this.reader = reader;
-        ;
     }
-
     @Override
-    public void execute() {
+    public void execute(Object parameter) {
         collectionManager.executeScript((String) parameter, reader);
     }
-
     @Override
-    public boolean isValid() {
-        return parameter != null;
+    public boolean isValid(Object parameter) {
+        return requireArgument(parameter, "execute_script file_name");
     }
 }

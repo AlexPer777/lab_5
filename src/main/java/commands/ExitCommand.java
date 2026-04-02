@@ -1,6 +1,5 @@
 package commands;
 
-import exceptions.InputException;
 import interfaces.Executable;
 import interfaces.Validatable;
 import manager.CollectionManager;
@@ -10,21 +9,11 @@ public class ExitCommand extends Command implements Executable, Validatable {
         super(collectionManager);
     }
     @Override
-    public void execute() {
+    public void execute(Object parameter) {
         collectionManager.exit();
     }
     @Override
-    public boolean isValid() {
-        try {
-            if (this.parameter == null) {
-                return true;
-
-            } else {
-                throw new InputException("Exit mustn't be have a parameters");
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid argument");
-            return false;
-        }
+    public boolean isValid(Object parameter) {
+        return requireNoArguments(parameter, "exit");
     }
 }

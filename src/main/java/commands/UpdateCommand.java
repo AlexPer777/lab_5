@@ -9,11 +9,11 @@ public class UpdateCommand extends Command implements Executable, Validatable {
         super(collectionManager);
     }
     @Override
-    public void execute() {
+    public void execute(Object parameter) {
         collectionManager.update(parameter);
     }
     @Override
-    public boolean isValid() {
-        return parameter != null;
+    public boolean isValid(Object parameter) {
+        return requireUpdateArgument(parameter);
     }
 }

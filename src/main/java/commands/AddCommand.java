@@ -9,13 +9,12 @@ public class AddCommand extends Command implements Executable, Validatable {
     public AddCommand(CollectionManager collectionManager) {
         super(collectionManager);
     }
-
     @Override
-    public void execute() {
+    public void execute(Object parameter) {
         collectionManager.add(parameter);
     }
     @Override
-    public boolean isValid() {
-        return true;
+    public boolean isValid(Object parameter) {
+        return requireHumanBeingArgumentOrNoArgs(parameter, "add {element}");
     }
 }

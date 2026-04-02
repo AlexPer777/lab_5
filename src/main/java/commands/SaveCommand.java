@@ -1,6 +1,5 @@
 package commands;
 
-import exceptions.InputException;
 import interfaces.Executable;
 import interfaces.Validatable;
 import manager.CollectionManager;
@@ -10,20 +9,11 @@ public class SaveCommand extends Command implements Executable, Validatable {
         super(collectionManager);
     }
     @Override
-    public void execute() {
+    public void execute(Object parameter) {
         collectionManager.save();
     }
     @Override
-    public boolean isValid() {
-        try {
-            if (this.parameter == null) {
-                return true;
-            } else {
-                throw new InputException("This command mustn't have a arguments");
-            }
-        } catch (NumberFormatException e) {
-            System.out.println(e.getMessage());
-            return false;
-        }
+    public boolean isValid(Object parameter) {
+        return requireNoArguments(parameter, "save");
     }
 }

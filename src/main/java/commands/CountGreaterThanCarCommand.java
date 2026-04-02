@@ -1,6 +1,5 @@
 package commands;
 
-import exceptions.InputException;
 import interfaces.Executable;
 import interfaces.Validatable;
 import manager.CollectionManager;
@@ -10,20 +9,11 @@ public class CountGreaterThanCarCommand extends Command implements Executable, V
         super(collectionManager);
     }
     @Override
-    public void execute() {
+    public void execute(Object parameter) {
         collectionManager.countGreaterThanCar();
     }
     @Override
-    public boolean isValid() {
-        try {
-            if (this.parameter == null) {
-                return true;
-            } else {
-                throw new InputException("This command mustn't have a arguments");
-            }
-        } catch (NumberFormatException e) {
-            System.out.println(e.getMessage());
-            return false;
-        }
+    public boolean isValid(Object parameter) {
+        return requireNoArguments(parameter, "count_greater_than_car");
     }
 }

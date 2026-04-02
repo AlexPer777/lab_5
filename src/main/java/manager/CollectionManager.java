@@ -5,8 +5,8 @@ import com.google.gson.GsonBuilder;
 import commands.LocalDateTimeAdapter;
 import model.Car;
 import model.HumanBeing;
+import util.DefaultRecursionController;
 import util.HumanBeingParser;
-import util.RecursionManager;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -18,6 +18,16 @@ public class CollectionManager {
     public Vector<HumanBeing> collection = new Vector<>();
     public LocalDateTime initTime = LocalDateTime.now();
     public HashMap<Integer, HumanBeing> IDs = new HashMap<>();
+    private final InputValidator inputValidator;
+    private final HumanBeingParser humanBeingParser;
+    private final DefaultRecursionController recursionController;
+    private int nextId = 1;
+
+    public CollectionManager(Scanner scanner) {
+        this.inputValidator = new InputValidator(scanner);
+        this.humanBeingParser = new HumanBeingParser();
+        this.recursionController = new DefaultRecursionController();
+    }
 
     public void show() {
         for (HumanBeing humanBeing : collection) {
@@ -78,21 +88,22 @@ filter_starts_with_name name : вывести элементы, значение
             String raw = parameter.toString()
                     .replace("{", "")
                     .replace("}", "");
-            human = HumanBeingParser.parse(raw);
+            human = humanBeingParser.parse(raw, nextId);
             if (human == null) {
                 System.out.println("Invalid element, skipping...");
                 return;
             }
         } else {
-            human = InputValidator.readHumanBeing();
+            human = inputValidator.readHumanBeing(nextId);
         }
+        nextId++;
         collection.add(human);
         IDs.put(human.getId(), human);
         System.out.println("Element added successfully!");
     }
     public void countGreaterThanCar(){
         System.out.println("Введите данные машины для сравнения:");
-        Car inputCar = InputValidator.readCar();
+        Car inputCar = inputValidator.readCar();
         int count = 0;
         for (HumanBeing human : collection) {
             Car car = human.getCar();
@@ -103,14 +114,12 @@ filter_starts_with_name name : вывести элементы, значение
         System.out.println("Количество элементов: " + count);
     }
     public void executeScript(String fileName, Reader reader) {
-        var controller = RecursionManager.getController();
-
-        if (controller.checkRecursion(fileName)) {
+        if (recursionController.checkRecursion(fileName)) {
             System.out.println("Recursion detected! Script already running: " + fileName);
             return;
         }
         try (Scanner fileScanner = new Scanner(new FileInputStream(fileName))) {
-            controller.pushScript(fileName);
+            recursionController.pushScript(fileName);
             while (fileScanner.hasNextLine()) {
                 String line = fileScanner.nextLine().trim();
                 if (line.isEmpty()) continue;
@@ -124,7 +133,7 @@ filter_starts_with_name name : вывести элементы, значение
         } catch (FileNotFoundException e) {
             System.out.println("File not found: " + fileName);
         } finally {
-            controller.popScript(fileName);
+            recursionController.popScript(fileName);
         }
     }
     private String prepareScriptCommand(String line, Scanner fileScanner) {
@@ -147,10 +156,8 @@ filter_starts_with_name name : вывести элементы, значение
         }
         return line;
     }
-
     private String readScriptHumanBeingData(Scanner fileScanner, String commandName) {
         List<String> values = new ArrayList<>();
-
         for (int i = 0; i < 9; i++) {
             String value = readNextScriptValue(fileScanner, commandName);
             if (value == null) {
@@ -158,7 +165,6 @@ filter_starts_with_name name : вывести элементы, значение
             }
             values.add(value);
         }
-
         String carName = values.get(8);
         if (!"null".equalsIgnoreCase(carName)) {
             String carCool = readNextScriptValue(fileScanner, commandName);
@@ -170,7 +176,6 @@ filter_starts_with_name name : вывести элементы, значение
 
         return String.join(" ", values);
     }
-
     private String readNextScriptValue(Scanner fileScanner, String commandName) {
         while (fileScanner.hasNextLine()) {
             String value = fileScanner.nextLine().trim();
@@ -205,7 +210,7 @@ filter_starts_with_name name : вывести элементы, значение
             String raw = parts[1]
                     .replace("{", "")
                     .replace("}", "");
-            HumanBeing parsed = HumanBeingParser.parse(raw);
+            HumanBeing parsed = humanBeingParser.parse(raw, 0);
             if (parsed == null) {
                 System.out.println("Invalid element, skipping...");
                 return;
@@ -221,14 +226,15 @@ filter_starts_with_name name : вывести элементы, значение
         } else {
             System.out.println("Введите новые данные элемента:");
 
-            human.setName(InputValidator.readName());
-            human.setCoordinates(InputValidator.readCoordinates());
-            human.setRealHero(InputValidator.readBoolean("Введите realHero"));
-            human.setHasToothpick(InputValidator.readBoolean("Введите hasToothpick"));
-            human.setImpactSpeed(InputValidator.readImpactSpeed());
-            human.setWeaponType(InputValidator.readWeaponType());
-            human.setMood(InputValidator.readMood());
-            human.setCar(InputValidator.readCar());
+            HumanBeing inputHuman = inputValidator.readHumanBeing(0);
+            human.setName(inputHuman.getName());
+            human.setCoordinates(inputHuman.getCoordinates());
+            human.setRealHero(inputHuman.isRealHero());
+            human.setHasToothpick(inputHuman.getHasToothpick());
+            human.setImpactSpeed(inputHuman.getImpactSpeed());
+            human.setWeaponType(inputHuman.getWeaponType());
+            human.setMood(inputHuman.getMood());
+            human.setCar(inputHuman.getCar());
         }
         System.out.println("Элемент успешно обновлён");
     }
@@ -238,14 +244,14 @@ filter_starts_with_name name : вывести элементы, значение
             String raw = parameter.toString()
                     .replace("{", "")
                     .replace("}", "");
-            example = HumanBeingParser.parse(raw);
+            example = humanBeingParser.parse(raw, 0);
             if (example == null) {
                 System.out.println("Invalid element");
                 return;
             }
         } else {
             System.out.println("Введите данные элемента для сравнения:");
-            example = InputValidator.readHumanBeing();
+            example = inputValidator.readHumanBeing(0);
         }
         Iterator<HumanBeing> iterator = collection.iterator();
         int removed = 0;
@@ -317,5 +323,8 @@ filter_starts_with_name name : вывести элементы, значение
     {
         System.out.println("Exit Command");
         System.exit(0);
+    }
+    public void setNextId(int nextId) {
+        this.nextId = nextId;
     }
 }

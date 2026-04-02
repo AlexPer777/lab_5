@@ -1,6 +1,5 @@
 package commands;
 
-import exceptions.InputException;
 import interfaces.Executable;
 import interfaces.Validatable;
 import manager.CollectionManager;
@@ -10,23 +9,11 @@ public class ShowCommand extends Command implements Executable, Validatable {
         super(collectionManager);
     }
     @Override
-    public boolean isValid() {
-        if (collectionManager.collection.isEmpty()) {
-            System.out.println("Collection doesn't have elements!");
-        }
-        try {
-            if (this.parameter == null) {
-                return true;
-            } else {
-                throw new InputException("Show doesn't have arguments!");
-            }
-        } catch (NumberFormatException e) {
-            System.out.println(e.getMessage());
-            return false;
-        }
+    public boolean isValid(Object parameter) {
+        return requireNoArguments(parameter, "show");
     }
     @Override
-    public void execute() {
+    public void execute(Object parameter) {
         collectionManager.show();
     }
 }

@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import org.jspecify.annotations.NonNull;
 
 public class HumanBeing implements Comparable<HumanBeing>{
-    private static int idCounter = 1;
     private final int id; //Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
     @NonNull
     private String name; //Поле не может быть null, Строка не может быть пустой
@@ -19,8 +18,8 @@ public class HumanBeing implements Comparable<HumanBeing>{
     private WeaponType weaponType; //Поле не может быть null
     private Mood mood; //Поле может быть null
     private Car car; //Поле может быть null
-    public HumanBeing(@NonNull String name, @NonNull Coordinates coordinates, boolean realHero, @NonNull Boolean hasToothpick, Integer impactSpeed, @NonNull WeaponType weaponType, Mood mood, Car car) {
-        this.id = idCounter++;
+    public HumanBeing(int id, @NonNull String name, @NonNull Coordinates coordinates, boolean realHero, @NonNull Boolean hasToothpick, Integer impactSpeed, @NonNull WeaponType weaponType, Mood mood, Car car) {
+        this.id = id;
         if (name.isBlank()) {
             throw new IllegalArgumentException("Name не может быть пустым");
         }
@@ -45,9 +44,6 @@ public class HumanBeing implements Comparable<HumanBeing>{
     }
     public @NonNull Coordinates getCoordinates() {
         return coordinates;
-    }
-    public @NonNull LocalDateTime getCreationDate() {
-        return creationDate;
     }
     public boolean isRealHero() {
         return realHero;
@@ -108,9 +104,6 @@ public class HumanBeing implements Comparable<HumanBeing>{
             return 1;
         return impactSpeed.compareTo(o.impactSpeed);
     }
-    public static void setIdCounter(int id) {
-        idCounter = id;
-    }
     @Override
     public String toString() {
         return "HumanBeing{" +
@@ -129,5 +122,4 @@ public class HumanBeing implements Comparable<HumanBeing>{
                 '}';
     }
 }
-
 

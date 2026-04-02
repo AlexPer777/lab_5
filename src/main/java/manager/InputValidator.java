@@ -4,8 +4,13 @@ import model.*;
 import java.util.Scanner;
 
 public class InputValidator {
-    private static final Scanner scanner = new Scanner(System.in);
-    public static String readName() {
+    private final Scanner scanner;
+
+    public InputValidator(Scanner scanner) {
+        this.scanner = scanner;
+    }
+
+    public String readName() {
         while (true) {
             System.out.println("Введите name:");
             String name = scanner.nextLine();
@@ -17,7 +22,7 @@ public class InputValidator {
         }
     }
 
-    public static boolean readBoolean(String message) {
+    public boolean readBoolean(String message) {
         while (true) {
             System.out.println(message + " (true/false)");
             String input = scanner.nextLine();
@@ -28,7 +33,7 @@ public class InputValidator {
         }
     }
 
-    public static Integer readImpactSpeed() {
+    public Integer readImpactSpeed() {
         while (true) {
             try {
                 System.out.println("Введите impactSpeed (> -117):");
@@ -43,7 +48,7 @@ public class InputValidator {
         }
     }
 
-    public static Coordinates readCoordinates() {
+    public Coordinates readCoordinates() {
         int x;
         long y;
         while (true) {
@@ -59,7 +64,7 @@ public class InputValidator {
         }
     }
 
-    public static WeaponType readWeaponType() {
+    public WeaponType readWeaponType() {
         while (true) {
             try {
                 System.out.println("Введите weaponType (HAMMER, AXE, PISTOL, RIFLE, KNIFE):");
@@ -69,7 +74,7 @@ public class InputValidator {
             }
         }
     }
-    public static Mood readMood() {
+    public Mood readMood() {
         while (true) {
             try {
                 System.out.println("Введите mood (SORROW, CALM, RAGE) или пусто:");
@@ -84,13 +89,14 @@ public class InputValidator {
         }
     }
 
-    public static Car readCar() {
+    public Car readCar() {
         System.out.println("Введите имя машины:");
         String name = scanner.nextLine();
         boolean cool = readBoolean("Машина крутая?");
         return new Car(name, cool);
     }
-    public static HumanBeing readHumanBeing() {
+
+    public HumanBeing readHumanBeing(int id) {
         String name = readName();
         Coordinates coordinates = readCoordinates();
         boolean realHero = readBoolean("Введите realHero");
@@ -100,6 +106,7 @@ public class InputValidator {
         Mood mood = readMood();
         Car car = readCar();
         return new HumanBeing(
+                id,
                 name,
                 coordinates,
                 realHero,

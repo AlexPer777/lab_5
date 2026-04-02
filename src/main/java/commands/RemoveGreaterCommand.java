@@ -9,11 +9,11 @@ public class RemoveGreaterCommand extends Command implements Executable, Validat
         super(collectionManager);
     }
     @Override
-    public void execute() {
+    public void execute(Object parameter) {
         collectionManager.removeGreater(parameter);
     }
     @Override
-    public boolean isValid() {
-        return true;
+    public boolean isValid(Object parameter) {
+        return requireHumanBeingArgumentOrNoArgs(parameter, "remove_greater {element}");
     }
 }

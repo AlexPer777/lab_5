@@ -36,8 +36,7 @@ public class CollectionLoader {
                     System.out.println("Skipped invalid element: " + element);
                 }
             }
-            HumanBeing.setIdCounter(maxId + 1);
-
+            collectionManager.setNextId(maxId + 1);
         } catch (Exception e) {
             System.out.println("Error reading file: " + e.getMessage());
         }

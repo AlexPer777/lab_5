@@ -250,5 +250,41 @@
       "name": "myu",
       "cool": false
     }
+  },
+  {
+    "id": 22,
+    "name": "Alex",
+    "coordinates": {
+      "x": 67,
+      "y": 67
+    },
+    "creationDate": "2026-04-02T20:26:20.059736",
+    "realHero": true,
+    "hasToothpick": true,
+    "impactSpeed": 67,
+    "weaponType": "AXE",
+    "mood": "SORROW",
+    "car": {
+      "name": "myu",
+      "cool": false
+    }
+  },
+  {
+    "id": 23,
+    "name": "355",
+    "coordinates": {
+      "x": 65,
+      "y": 65
+    },
+    "creationDate": "2026-04-02T20:40:12.905099",
+    "realHero": true,
+    "hasToothpick": true,
+    "impactSpeed": 433,
+    "weaponType": "HAMMER",
+    "mood": "CALM",
+    "car": {
+      "name": "452",
+      "cool": true
+    }
   }
 ]

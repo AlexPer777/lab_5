@@ -9,11 +9,11 @@ public class RemoveByIdCommand extends Command implements Executable, Validatabl
         super(collectionManager);
     }
     @Override
-    public void execute() {
+    public void execute(Object parameter) {
         collectionManager.RemoveById(parameter);
     }
     @Override
-    public boolean isValid() {
-        return parameter != null;
+    public boolean isValid(Object parameter) {
+        return requireNumericArgument(parameter, "remove_by_id id");
     }
 }

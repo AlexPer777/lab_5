@@ -10,15 +10,11 @@ public class SortCommand extends Command implements Executable, Validatable {
         super(collectionManager);
     }
     @Override
-    public void execute() {
+    public void execute(Object parameter) {
         collectionManager.sort();
     }
     @Override
-    public boolean isValid() {
-        if (parameter != null) {
-            System.out.println("This command mustn't have arguments");
-            return false;
-        }
-        return true;
+    public boolean isValid(Object parameter) {
+        return requireNoArguments(parameter, "sort");
     }
 }

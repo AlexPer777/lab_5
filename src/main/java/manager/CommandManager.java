@@ -46,9 +46,8 @@ public class CommandManager {
             System.out.println("Unknown command: " + command);
             return;
         }
-        cmd.setParameter(parameter);
-        if (cmd.isValid()) {
-            cmd.execute();
+        if (cmd.isValid(parameter)) {
+            cmd.execute(parameter);
         }
     }
 }
