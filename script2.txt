@@ -1,2 +1,9 @@
 help
 execute_script script.txt
+
+add {alex 2424 true }
+
+add
+alex
+2414
+true

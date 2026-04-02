@@ -5,7 +5,6 @@ import java.util.Scanner;
 
 public class InputValidator {
     private static final Scanner scanner = new Scanner(System.in);
-
     public static String readName() {
         while (true) {
             System.out.println("Введите name:");
@@ -33,7 +32,7 @@ public class InputValidator {
         while (true) {
             try {
                 System.out.println("Введите impactSpeed (> -117):");
-                Integer value = Integer.parseInt(scanner.nextLine());
+                int value = Integer.parseInt(scanner.nextLine());
                 if (value <= -117) {
                     throw new IllegalArgumentException();
                 }
@@ -71,7 +70,6 @@ public class InputValidator {
         }
     }
     public static Mood readMood() {
-
         while (true) {
             try {
                 System.out.println("Введите mood (SORROW, CALM, RAGE) или пусто:");
