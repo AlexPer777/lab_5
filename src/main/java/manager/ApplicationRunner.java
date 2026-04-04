@@ -1,5 +1,9 @@
 package manager;
 
+import executor.CommandExecutor;
+import response.Response;
+import response.ResponseStatus;
+
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
@@ -13,6 +17,7 @@ public class ApplicationRunner {
 
         Scanner scanner = new Scanner(System.in);
         CollectionManager collectionManager = new CollectionManager(scanner);
+        ResponsePrinter responsePrinter = new ResponsePrinter();
         CollectionLoader loader = new CollectionLoader(collectionManager);
         try {
             loader.loadCollection(args[0]);
@@ -21,24 +26,27 @@ public class ApplicationRunner {
             return;
         }
 
-        CommandManager commandManager = new CommandManager(collectionManager);
-        Reader reader = new Reader(collectionManager, commandManager);
+        CommandExecutor commandExecutor = new CommandExecutor(collectionManager);
+        Reader reader = new Reader(collectionManager, commandExecutor);
 
-        commandManager.setReader(reader);
-        commandManager.initCommands();
-        commandManager.initScriptCommand();
+        commandExecutor.setReader(reader);
+        commandExecutor.initCommands();
 
-        startInteractiveMode(reader, scanner);
+        startInteractiveMode(reader, responsePrinter, scanner);
     }
 
-    private void startInteractiveMode(Reader reader, Scanner scanner) {
+    private void startInteractiveMode(Reader reader, ResponsePrinter responsePrinter, Scanner scanner) {
         System.out.println("Program is running");
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
             if (line == null || line.trim().isEmpty()) {
                 continue;
             }
-            reader.getLine(line);
+            Response response = reader.getLine(line);
+            responsePrinter.print(response);
+            if (response.getStatus() == ResponseStatus.EXIT) {
+                break;
+            }
         }
 
         System.out.println("EOF detected. Program terminated");

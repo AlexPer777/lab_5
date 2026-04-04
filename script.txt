@@ -10,3 +10,4 @@ sorrow
 myu
 true
 info
+execute_script script2.txt

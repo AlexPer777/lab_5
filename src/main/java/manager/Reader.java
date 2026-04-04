@@ -1,68 +1,161 @@
 package manager;
 
+import executor.CommandExecutor;
 import exceptions.InputException;
+import model.Car;
+import model.HumanBeing;
+import request.*;
+import response.Response;
+import response.ResponseStatus;
 
 public class Reader {
 
     private final CollectionManager collectionManager;
-    private final CommandManager commandManager;
+    private final CommandExecutor commandExecutor;
 
-    public Reader(CollectionManager collectionManager, CommandManager commandManager) {
+    public Reader(CollectionManager collectionManager, CommandExecutor commandExecutor) {
         this.collectionManager = collectionManager;
-        this.commandManager = commandManager;
+        this.commandExecutor = commandExecutor;
     }
-    public void getLine(String read) {
+
+    public Response getLine(String read) {
         try {
             if (read == null || read.trim().isEmpty()) {
-                return;
+                return new Response("", ResponseStatus.SUCCESS, null);
             }
             read = read.trim();
-            String command;
-            String parameter = null;
-            if (read.contains("{")) {
-                int start = read.indexOf("{");
-                int end = read.lastIndexOf("}");
-                if (end == -1) {
-                    throw new InputException("Ошибка: не закрыта скобка }");
-                }
-                String before = read.substring(0, start).trim();
-                String body = read.substring(start, end + 1);
-                String[] parts = before.split(" ");
-                command = parts[0];
-                if (parts.length > 1) {
-                    parameter = parts[1] + " " + body;
-                } else {
-                    parameter = body;
-                }
-            } else {
-                String[] parts = read.split(" ", 2);
-                command = parts[0];
-                parameter = (parts.length > 1) ? parts[1] : null;
-            }
-            validate(command, parameter);
-            toCommand(command, parameter);
+            return toCommand(buildRequest(read));
         } catch (InputException e) {
-            System.out.println(e.getMessage());
+            return new Response(e.getMessage(), ResponseStatus.ERROR, null);
         }
     }
 
-    private void validate(String command, String parameter) throws InputException {
-        if ("update".equals(command)) {
-            if (parameter == null) {
-                throw new InputException("update id {element}");
+    private Request buildRequest(String read) {
+        ParsedInput parsedInput = parseInput(read);
+        String command = parsedInput.command();
+        String parameter = parsedInput.parameter();
+
+        switch (command) {
+            case "help", "info", "show", "clear", "save", "sort", "exit" -> {
+                if (parameter != null) {
+                    throw new InputException(command);
+                }
+                return new NoArgumentRequest(command);
             }
-            String[] parts = parameter.split(" ", 2);
-            if (!parts[0].matches("\\d+")) {
-                throw new InputException("update id {element}");
+            case "remove_by_id", "remove_at" -> {
+                return new LongRequest(command, parseLong(parameter, command + " id"));
             }
-        }
-        if ("remove_greater".equals(command)) {
-            if (parameter == null || !parameter.contains("{")) {
-                throw new InputException("remove_greater {element}");
+            case "filter_contains_name", "filter_starts_with_name", "execute_script" -> {
+                if (parameter == null || parameter.isBlank()) {
+                    throw new InputException(command + " value");
+                }
+                return new StringRequest(command, parameter.trim());
+            }
+            case "add" -> {
+                HumanBeing humanBeing = parameter == null
+                        ? collectionManager.readHumanBeingForAdd()
+                        : parseHumanBeingForAdd(parameter);
+                return new HumanBeingRequest(command, humanBeing);
+            }
+            case "remove_greater" -> {
+                HumanBeing humanBeing = parameter == null
+                        ? collectionManager.readHumanBeingTemplate()
+                        : parseHumanBeingTemplate(parameter, "remove_greater {element}");
+                return new HumanBeingRequest(command, humanBeing);
+            }
+            case "update" -> {
+                if (parameter == null || parameter.isBlank()) {
+                    throw new InputException("update id {element}");
+                }
+                String[] parts = parameter.trim().split("\\s+", 2);
+                long id = parseLong(parts[0], "update id {element}");
+                HumanBeing humanBeing = parts.length > 1
+                        ? parseHumanBeingTemplate(parts[1], "update id {element}")
+                        : collectionManager.readHumanBeingTemplate();
+                return new LongAndHumanBeingRequest(command, id, humanBeing);
+            }
+            case "count_greater_than_car" -> {
+                Car car = parameter == null ? collectionManager.readCar() : collectionManager.parseCar(parameter);
+                if (car == null) {
+                    throw new InputException("count_greater_than_car carName cool");
+                }
+                return new CarRequest(command, car);
+            }
+            default -> {
+                if (parameter == null) {
+                    return new NoArgumentRequest(command);
+                }
+                return new StringRequest(command, parameter);
             }
         }
     }
-    private void toCommand(String command, Object parameter) {
-        commandManager.startCommand(command, parameter);
+
+    private ParsedInput parseInput(String read) {
+        String command;
+        String parameter;
+        if (read.contains("{")) {
+            int start = read.indexOf("{");
+            int end = read.lastIndexOf("}");
+            if (end == -1) {
+                throw new InputException("Ошибка: не закрыта скобка }");
+            }
+            String before = read.substring(0, start).trim();
+            String body = read.substring(start, end + 1);
+            String[] parts = before.split(" ");
+            command = parts[0];
+            if (parts.length > 1) {
+                parameter = parts[1] + " " + body;
+            } else {
+                parameter = body;
+            }
+        } else {
+            String[] parts = read.split(" ", 2);
+            command = parts[0];
+            parameter = (parts.length > 1) ? parts[1] : null;
+        }
+        return new ParsedInput(command, parameter);
+    }
+
+    private HumanBeing parseHumanBeingForAdd(String parameter) {
+        HumanBeing newHumanBeing = collectionManager.parseHumanBeingForAdd(cleanBraces(parameter));
+        if (newHumanBeing == null) {
+            throw new InputException("add {element}");
+        }
+        return newHumanBeing;
+    }
+
+    private HumanBeing parseHumanBeingTemplate(String parameter, String errorMessage) {
+        String raw = cleanBraces(parameter);
+        HumanBeing humanBeing = collectionManager.parseHumanBeingTemplate(raw);
+        if (humanBeing == null) {
+            throw new InputException(errorMessage);
+        }
+        return humanBeing;
+    }
+
+    private String cleanBraces(String parameter) {
+        String trimmed = parameter.trim();
+        if (!trimmed.startsWith("{") || !trimmed.endsWith("}")) {
+            throw new InputException("Неверный формат объекта");
+        }
+        return trimmed.substring(1, trimmed.length() - 1).trim();
+    }
+
+    private long parseLong(String parameter, String errorMessage) {
+        if (parameter == null || parameter.isBlank()) {
+            throw new InputException(errorMessage);
+        }
+        try {
+            return Long.parseLong(parameter.trim());
+        } catch (NumberFormatException e) {
+            throw new InputException(errorMessage);
+        }
+    }
+
+    private Response toCommand(Request request) {
+        return commandExecutor.execute(request);
+    }
+
+    private record ParsedInput(String command, String parameter) {
     }
 }

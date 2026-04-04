@@ -1,19 +1,15 @@
 package commands;
 
-import interfaces.Executable;
-import interfaces.Validatable;
 import manager.CollectionManager;
+import request.LongRequest;
+import response.Response;
 
-public class RemoveByIdCommand extends Command implements Executable, Validatable {
+public class RemoveByIdCommand extends Command<LongRequest> {
     public RemoveByIdCommand(CollectionManager collectionManager){
-        super(collectionManager);
+        super(collectionManager, LongRequest.class);
     }
     @Override
-    public void execute(Object parameter) {
-        collectionManager.RemoveById(parameter);
-    }
-    @Override
-    public boolean isValid(Object parameter) {
-        return requireNumericArgument(parameter, "remove_by_id id");
+    public Response execute(LongRequest request) {
+        return success(collectionManager.removeById(request.getValue()));
     }
 }

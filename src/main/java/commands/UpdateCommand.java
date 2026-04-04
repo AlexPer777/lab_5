@@ -1,19 +1,15 @@
 package commands;
 
-import interfaces.Executable;
-import interfaces.Validatable;
 import manager.CollectionManager;
+import request.LongAndHumanBeingRequest;
+import response.Response;
 
-public class UpdateCommand extends Command implements Executable, Validatable {
+public class UpdateCommand extends Command<LongAndHumanBeingRequest> {
     public UpdateCommand(CollectionManager collectionManager) {
-        super(collectionManager);
+        super(collectionManager, LongAndHumanBeingRequest.class);
     }
     @Override
-    public void execute(Object parameter) {
-        collectionManager.update(parameter);
-    }
-    @Override
-    public boolean isValid(Object parameter) {
-        return requireUpdateArgument(parameter);
+    public Response execute(LongAndHumanBeingRequest request) {
+        return success(collectionManager.update(request.getId(), request.getHumanBeing()));
     }
 }

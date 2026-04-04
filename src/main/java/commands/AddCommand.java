@@ -1,20 +1,15 @@
 package commands;
 
-import interfaces.Executable;
-import interfaces.Validatable;
 import manager.CollectionManager;
+import request.HumanBeingRequest;
+import response.Response;
 
-public class AddCommand extends Command implements Executable, Validatable {
-
+public class AddCommand extends Command<HumanBeingRequest> {
     public AddCommand(CollectionManager collectionManager) {
-        super(collectionManager);
+        super(collectionManager, HumanBeingRequest.class);
     }
     @Override
-    public void execute(Object parameter) {
-        collectionManager.add(parameter);
-    }
-    @Override
-    public boolean isValid(Object parameter) {
-        return requireHumanBeingArgumentOrNoArgs(parameter, "add {element}");
+    public Response execute(HumanBeingRequest request) {
+        return success(collectionManager.add(request.getHumanBeing()));
     }
 }

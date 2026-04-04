@@ -7,6 +7,8 @@ import model.Car;
 import model.HumanBeing;
 import util.DefaultRecursionController;
 import util.HumanBeingParser;
+import response.Response;
+import response.ResponseStatus;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -29,29 +31,30 @@ public class CollectionManager {
         this.recursionController = new DefaultRecursionController();
     }
 
-    public void show() {
-        for (HumanBeing humanBeing : collection) {
-            System.out.println(humanBeing);
-            System.out.println();
-        }
+    public List<HumanBeing> show() {
+        return new ArrayList<>(collection);
     }
-    public void clear(){
+
+    public String clear(){
         collection.clear();
         IDs.clear();
-        System.out.println("Clear command executed successfully");
+        return "Clear command executed successfully";
     }
-    public  void sort() {
+
+    public String sort() {
         Collections.sort(collection);
-        System.out.println("Коллекция отсортирована.");
+        return "Коллекция отсортирована.";
     }
-    public  void info(){
-        System.out.println("Information about collections");
-        System.out.println("Type: Human Being");
-        System.out.println("Date initialization: " + initTime);
-        System.out.println("Quantity elements: " + collection.size() + "\n");
+
+    public String info(){
+        return "Information about collections\n" +
+                "Type: Human Being\n" +
+                "Date initialization: " + initTime + "\n" +
+                "Quantity elements: " + collection.size() + "\n";
     }
-    public  void help(){
-        System.out.println("""
+
+    public String help(){
+        return """
 help : вывести справку по доступным командам
 info : вывести в стандартный поток вывода информацию о коллекции (тип, дата инициализации, количество элементов и т.д.)
 show : вывести в стандартный поток вывода все элементы коллекции в строковом представлении
@@ -68,42 +71,30 @@ sort : отсортировать коллекцию в естественном
 count_greater_than_car car : вывести количество элементов, значение поля car которых больше заданного
 filter_contains_name name : вывести элементы, значение поля name которых содержит заданную подстроку
 filter_starts_with_name name : вывести элементы, значение поля name которых начинается с заданной подстроки
-""");
+""";
     }
-    public  void save(){
+
+    public String save(){
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
                 .setPrettyPrinting()
                 .create();
         try (FileWriter writer = new FileWriter("collection.json")) {
             gson.toJson(collection, writer);
-            System.out.println("Коллекция сохранена");
+            return "Коллекция сохранена";
         } catch (IOException e) {
-            System.out.println("Ошибка сохранения файла");
+            return "Ошибка сохранения файла";
         }
     }
-    public void add(Object parameter) {
-        HumanBeing human;
-        if (parameter != null && parameter.toString().startsWith("{")) {
-            String raw = parameter.toString()
-                    .replace("{", "")
-                    .replace("}", "");
-            human = humanBeingParser.parse(raw, nextId);
-            if (human == null) {
-                System.out.println("Invalid element, skipping...");
-                return;
-            }
-        } else {
-            human = inputValidator.readHumanBeing(nextId);
-        }
-        nextId++;
+
+    public String add(HumanBeing human) {
         collection.add(human);
         IDs.put(human.getId(), human);
-        System.out.println("Element added successfully!");
+        nextId = Math.max(nextId, human.getId() + 1);
+        return "Element added successfully!";
     }
-    public void countGreaterThanCar(){
-        System.out.println("Введите данные машины для сравнения:");
-        Car inputCar = inputValidator.readCar();
+
+    public String countGreaterThanCar(Car inputCar){
         int count = 0;
         for (HumanBeing human : collection) {
             Car car = human.getCar();
@@ -111,12 +102,12 @@ filter_starts_with_name name : вывести элементы, значение
                 count++;
             }
         }
-        System.out.println("Количество элементов: " + count);
+        return "Количество элементов: " + count;
     }
-    public void executeScript(String fileName, Reader reader) {
+
+    public Response executeScript(String fileName, Reader reader, ResponsePrinter responsePrinter) {
         if (recursionController.checkRecursion(fileName)) {
-            System.out.println("Recursion detected! Script already running: " + fileName);
-            return;
+            return new Response("Recursion detected! Script already running: " + fileName, ResponseStatus.ERROR, null);
         }
         try (Scanner fileScanner = new Scanner(new FileInputStream(fileName))) {
             recursionController.pushScript(fileName);
@@ -125,16 +116,17 @@ filter_starts_with_name name : вывести элементы, значение
                 if (line.isEmpty()) continue;
                 line = prepareScriptCommand(line, fileScanner);
                 if (line == null) {
-                    return;
+                    return new Response("Ошибка чтения скрипта: " + fileName, ResponseStatus.ERROR, null);
                 }
                 System.out.println(">> " + line);
-                reader.getLine(line);
+                responsePrinter.print(reader.getLine(line));
             }
         } catch (FileNotFoundException e) {
-            System.out.println("File not found: " + fileName);
+            return new Response("File not found: " + fileName, ResponseStatus.ERROR, null);
         } finally {
             recursionController.popScript(fileName);
         }
+        return new Response("Скрипт выполнен: " + fileName, ResponseStatus.SUCCESS, null);
     }
     private String prepareScriptCommand(String line, Scanner fileScanner) {
         if ("add".equals(line)) {
@@ -187,72 +179,24 @@ filter_starts_with_name name : вывести элементы, значение
         System.out.println("Ошибка: в скрипте недостаточно данных для команды " + commandName);
         return null;
     }
-    public void update(Object parameter) {
-        if (parameter == null) {
-            System.out.println("Не указан ID");
-            return;
-        }
-        String input = parameter.toString().trim();
-        String[] parts = input.split(" ", 2);
-        int id;
-        try {
-            id = Integer.parseInt(parts[0]);
-        } catch (Exception e) {
-            System.out.println("ID должен быть числом");
-            return;
-        }
-        if (!IDs.containsKey(id)) {
-            System.out.println("Элемент с таким id не найден");
-            return;
-        }
-        HumanBeing human = IDs.get(id);
-        if (parts.length > 1 && parts[1].startsWith("{")) {
-            String raw = parts[1]
-                    .replace("{", "")
-                    .replace("}", "");
-            HumanBeing parsed = humanBeingParser.parse(raw, 0);
-            if (parsed == null) {
-                System.out.println("Invalid element, skipping...");
-                return;
-            }
-            human.setName(parsed.getName());
-            human.setCoordinates(parsed.getCoordinates());
-            human.setRealHero(parsed.isRealHero());
-            human.setHasToothpick(parsed.getHasToothpick());
-            human.setImpactSpeed(parsed.getImpactSpeed());
-            human.setWeaponType(parsed.getWeaponType());
-            human.setMood(parsed.getMood());
-            human.setCar(parsed.getCar());
-        } else {
-            System.out.println("Введите новые данные элемента:");
 
-            HumanBeing inputHuman = inputValidator.readHumanBeing(0);
-            human.setName(inputHuman.getName());
-            human.setCoordinates(inputHuman.getCoordinates());
-            human.setRealHero(inputHuman.isRealHero());
-            human.setHasToothpick(inputHuman.getHasToothpick());
-            human.setImpactSpeed(inputHuman.getImpactSpeed());
-            human.setWeaponType(inputHuman.getWeaponType());
-            human.setMood(inputHuman.getMood());
-            human.setCar(inputHuman.getCar());
+    public String update(long id, HumanBeing updatedHuman) {
+        if (!IDs.containsKey((int)id)) {
+            return "Элемент с таким id не найден";
         }
-        System.out.println("Элемент успешно обновлён");
+        HumanBeing human = IDs.get((int)id);
+        human.setName(updatedHuman.getName());
+        human.setCoordinates(updatedHuman.getCoordinates());
+        human.setRealHero(updatedHuman.isRealHero());
+        human.setHasToothpick(updatedHuman.getHasToothpick());
+        human.setImpactSpeed(updatedHuman.getImpactSpeed());
+        human.setWeaponType(updatedHuman.getWeaponType());
+        human.setMood(updatedHuman.getMood());
+        human.setCar(updatedHuman.getCar());
+        return "Элемент успешно обновлён";
     }
-    public void removeGreater(Object parameter) {
-        HumanBeing example;
-        if (parameter != null && parameter.toString().startsWith("{")) {
-            String raw = parameter.toString()
-                    .replace("{", "")
-                    .replace("}", "");
-            example = humanBeingParser.parse(raw, 0);
-            if (example == null) {
-                System.out.println("Invalid element");
-                return;
-            }
-        } else {
-            System.out.println("Введите данные элемента для сравнения:");
-            example = inputValidator.readHumanBeing(0);
-        }
+
+    public String removeGreater(HumanBeing example) {
         Iterator<HumanBeing> iterator = collection.iterator();
         int removed = 0;
         while (iterator.hasNext()) {
@@ -263,68 +207,84 @@ filter_starts_with_name name : вывести элементы, значение
                 removed++;
             }
         }
-        System.out.println("Удалено элементов: " + removed);
+        return "Удалено элементов: " + removed;
     }
-    public void FilterContainsName(String substring) {
-        int count = 0;
+
+    public List<HumanBeing> filterContainsName(String substring) {
+        List<HumanBeing> result = new ArrayList<>();
         for (HumanBeing human : collection) {
             if (human.getName().contains(substring)) {
-                System.out.println(human);
-                count++;
+                result.add(human);
             }
         }
-        if (count == 0) {
-            System.out.println("Элементы не найдены.");
-        }
+        return result;
     }
-    public void FilterStartsWithName(String prefix) {
-        int count = 0;
+
+    public List<HumanBeing> filterStartsWithName(String prefix) {
+        List<HumanBeing> result = new ArrayList<>();
         for (HumanBeing human : collection) {
             if (human.getName().startsWith(prefix)) {
-                System.out.println(human);
-                count++;
+                result.add(human);
             }
         }
-        if (count == 0) {
-            System.out.println("Элементы не найдены.");
-        }
+        return result;
     }
-    public void RemoveAt(Object parameter) {
-        if (parameter == null) {
-            System.out.println("Не указан индекс");
-            return;
-        }
-        int index = Integer.parseInt(parameter.toString());
+
+    public String removeAt(long parameter) {
+        int index = (int) parameter;
         if (index < 0 || index >= collection.size()) {
-            System.out.println("Индекс вне диапазона коллекции");
-            return;
+            return "Индекс вне диапазона коллекции";
         }
         HumanBeing humanBeing = collection.get(index);
         collection.remove(index);
         IDs.remove(humanBeing.getId());
-        System.out.println("Элемент на позиции " + index + " удалён");
+        return "Элемент на позиции " + index + " удалён";
     }
-    public void RemoveById(Object parameter) {
-        if (parameter == null) {
-            System.out.println("Не указан ID");
-            return;
-        }
-        int id = Integer.parseInt(parameter.toString());
+
+    public String removeById(long parameter) {
+        int id = (int) parameter;
         if (!IDs.containsKey(id)) {
-            System.out.println("Элемент с таким ID не найден");
-            return;
+            return "Элемент с таким ID не найден";
         }
         HumanBeing humanBeing = IDs.get(id);
         collection.remove(humanBeing);
         IDs.remove(id);
-        System.out.println("Элемент с id " + id + " успешно удалён");
+        return "Элемент с id " + id + " успешно удалён";
     }
-    public void exit()
-    {
-        System.out.println("Exit Command");
-        System.exit(0);
-    }
+
     public void setNextId(int nextId) {
         this.nextId = nextId;
+    }
+
+    public HumanBeing readHumanBeingForAdd() {
+        return inputValidator.readHumanBeing(nextId);
+    }
+
+    public HumanBeing readHumanBeingTemplate() {
+        return inputValidator.readHumanBeing(0);
+    }
+
+    public HumanBeing parseHumanBeingForAdd(String raw) {
+        return humanBeingParser.parse(raw, nextId);
+    }
+
+    public HumanBeing parseHumanBeingTemplate(String raw) {
+        return humanBeingParser.parse(raw, 0);
+    }
+
+    public Car readCar() {
+        return inputValidator.readCar();
+    }
+
+    public Car parseCar(String raw) {
+        try {
+            String[] parts = raw.trim().split("\\s+");
+            if (parts.length != 2) {
+                return null;
+            }
+            return new Car(parts[0], Boolean.parseBoolean(parts[1]));
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

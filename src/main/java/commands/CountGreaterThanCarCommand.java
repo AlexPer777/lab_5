@@ -1,19 +1,15 @@
 package commands;
 
-import interfaces.Executable;
-import interfaces.Validatable;
 import manager.CollectionManager;
+import request.CarRequest;
+import response.Response;
 
-public class CountGreaterThanCarCommand extends Command implements Executable, Validatable {
+public class CountGreaterThanCarCommand extends Command<CarRequest> {
     public CountGreaterThanCarCommand(CollectionManager collectionManager) {
-        super(collectionManager);
+        super(collectionManager, CarRequest.class);
     }
     @Override
-    public void execute(Object parameter) {
-        collectionManager.countGreaterThanCar();
-    }
-    @Override
-    public boolean isValid(Object parameter) {
-        return requireNoArguments(parameter, "count_greater_than_car");
+    public Response execute(CarRequest request) {
+        return success(collectionManager.countGreaterThanCar(request.getCar()));
     }
 }

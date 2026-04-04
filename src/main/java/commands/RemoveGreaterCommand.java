@@ -1,19 +1,15 @@
 package commands;
 
-import interfaces.Executable;
-import interfaces.Validatable;
 import manager.CollectionManager;
+import request.HumanBeingRequest;
+import response.Response;
 
-public class RemoveGreaterCommand extends Command implements Executable, Validatable {
+public class RemoveGreaterCommand extends Command<HumanBeingRequest> {
     public RemoveGreaterCommand(CollectionManager collectionManager) {
-        super(collectionManager);
+        super(collectionManager, HumanBeingRequest.class);
     }
     @Override
-    public void execute(Object parameter) {
-        collectionManager.removeGreater(parameter);
-    }
-    @Override
-    public boolean isValid(Object parameter) {
-        return requireHumanBeingArgumentOrNoArgs(parameter, "remove_greater {element}");
+    public Response execute(HumanBeingRequest request) {
+        return success(collectionManager.removeGreater(request.getHumanBeing()));
     }
 }
