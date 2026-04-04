@@ -1,20 +1,15 @@
 package commands;
 
-import interfaces.Executable;
-import interfaces.Validatable;
 import manager.CollectionManager;
+import request.NoArgumentRequest;
+import response.Response;
 
-public class InfoCommand extends Command implements Executable, Validatable {
+public class InfoCommand extends Command<NoArgumentRequest> {
     public InfoCommand(CollectionManager collectionManager) {
-        super(collectionManager);
+        super(collectionManager, NoArgumentRequest.class);
     }
     @Override
-    public boolean isValid(Object parameter) {
-        return requireNoArguments(parameter, "info");
+    public Response execute(NoArgumentRequest request) {
+        return success(collectionManager.info());
     }
-    @Override
-    public void execute(Object parameter) {
-        collectionManager.info();
-    }
-
 }

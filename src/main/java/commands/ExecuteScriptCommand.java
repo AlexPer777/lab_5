@@ -2,21 +2,22 @@ package commands;
 
 import manager.CollectionManager;
 import manager.Reader;
+import manager.ResponsePrinter;
+import request.StringRequest;
+import response.Response;
 
-public class ExecuteScriptCommand extends Command {
+public class ExecuteScriptCommand extends Command<StringRequest> {
 
     private final Reader reader;
+    private final ResponsePrinter responsePrinter;
 
     public ExecuteScriptCommand(CollectionManager collectionManager, Reader reader) {
-        super(collectionManager);
+        super(collectionManager, StringRequest.class);
         this.reader = reader;
+        this.responsePrinter = new ResponsePrinter();
     }
     @Override
-    public void execute(Object parameter) {
-        collectionManager.executeScript((String) parameter, reader);
-    }
-    @Override
-    public boolean isValid(Object parameter) {
-        return requireArgument(parameter, "execute_script file_name");
+    public Response execute(StringRequest request) {
+        return collectionManager.executeScript(request.getValue(), reader, responsePrinter);
     }
 }

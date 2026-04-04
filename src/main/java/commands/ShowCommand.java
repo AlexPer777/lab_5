@@ -1,19 +1,19 @@
 package commands;
 
-import interfaces.Executable;
-import interfaces.Validatable;
 import manager.CollectionManager;
+import request.NoArgumentRequest;
+import response.Response;
+import response.ResponseStatus;
 
-public class ShowCommand extends Command implements Executable, Validatable {
+public class ShowCommand extends Command<NoArgumentRequest> {
     public ShowCommand(CollectionManager collectionManager) {
-        super(collectionManager);
+        super(collectionManager, NoArgumentRequest.class);
     }
+
     @Override
-    public boolean isValid(Object parameter) {
-        return requireNoArguments(parameter, "show");
-    }
-    @Override
-    public void execute(Object parameter) {
-        collectionManager.show();
+    public Response execute(NoArgumentRequest request) {
+        var humans = collectionManager.show();
+        String message = humans.isEmpty() ? "Collection doesn't have elements!" : null;
+        return new Response(message, ResponseStatus.SUCCESS, humans);
     }
 }

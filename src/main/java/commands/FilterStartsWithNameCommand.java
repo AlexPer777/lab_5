@@ -1,19 +1,17 @@
 package commands;
 
-import interfaces.Executable;
-import interfaces.Validatable;
 import manager.CollectionManager;
+import request.StringRequest;
+import response.Response;
 
-public class FilterStartsWithNameCommand extends Command implements Executable, Validatable {
+public class FilterStartsWithNameCommand extends Command<StringRequest> {
     public FilterStartsWithNameCommand(CollectionManager collectionManager) {
-        super(collectionManager);
+        super(collectionManager, StringRequest.class);
     }
     @Override
-    public void execute(Object parameter) {
-        collectionManager.FilterStartsWithName((String) parameter);
-    }
-    @Override
-    public boolean isValid(Object parameter) {
-        return requireArgument(parameter, "filter_starts_with_name name");
+    public Response execute(StringRequest request) {
+        var humans = collectionManager.filterStartsWithName(request.getValue());
+        String message = humans.isEmpty() ? "Элементы не найдены" : null;
+        return new Response(message, response.ResponseStatus.SUCCESS, humans);
     }
 }

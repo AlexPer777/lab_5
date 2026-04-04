@@ -1,19 +1,16 @@
 package commands;
 
-import interfaces.Executable;
-import interfaces.Validatable;
 import manager.CollectionManager;
+import request.NoArgumentRequest;
+import response.Response;
+import response.ResponseStatus;
 
-public class ExitCommand extends Command implements Executable, Validatable {
+public class ExitCommand extends Command<NoArgumentRequest> {
     public ExitCommand(CollectionManager collectionManager) {
-        super(collectionManager);
+        super(collectionManager, NoArgumentRequest.class);
     }
     @Override
-    public void execute(Object parameter) {
-        collectionManager.exit();
-    }
-    @Override
-    public boolean isValid(Object parameter) {
-        return requireNoArguments(parameter, "exit");
+    public Response execute(NoArgumentRequest request) {
+        return new Response("Exit Command", ResponseStatus.EXIT, null);
     }
 }

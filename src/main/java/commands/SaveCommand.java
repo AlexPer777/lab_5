@@ -1,19 +1,15 @@
 package commands;
 
-import interfaces.Executable;
-import interfaces.Validatable;
 import manager.CollectionManager;
+import request.NoArgumentRequest;
+import response.Response;
 
-public class SaveCommand extends Command implements Executable, Validatable {
+public class SaveCommand extends Command<NoArgumentRequest> {
     public SaveCommand(CollectionManager collectionManager) {
-        super(collectionManager);
+        super(collectionManager, NoArgumentRequest.class);
     }
     @Override
-    public void execute(Object parameter) {
-        collectionManager.save();
-    }
-    @Override
-    public boolean isValid(Object parameter) {
-        return requireNoArguments(parameter, "save");
+    public Response execute(NoArgumentRequest request) {
+        return success(collectionManager.save());
     }
 }

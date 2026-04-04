@@ -1,19 +1,15 @@
 package commands;
 
-import interfaces.Executable;
-import interfaces.Validatable;
 import manager.CollectionManager;
+import request.NoArgumentRequest;
+import response.Response;
 
-public class HelpCommand extends Command implements Executable, Validatable {
+public class HelpCommand extends Command<NoArgumentRequest> {
     public HelpCommand(CollectionManager collectionManager) {
-        super(collectionManager);
+        super(collectionManager, NoArgumentRequest.class);
     }
     @Override
-    public boolean isValid(Object parameter) {
-        return requireNoArguments(parameter, "help");
-    }
-    @Override
-    public void execute(Object parameter) {
-        collectionManager.help();
+    public Response execute(NoArgumentRequest request) {
+        return success(collectionManager.help());
     }
 }
