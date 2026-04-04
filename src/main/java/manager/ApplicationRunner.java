@@ -7,7 +7,7 @@ public class ApplicationRunner {
 
     public void run(String[] args) {
         if (args.length == 0) {
-            System.out.println("Не указан файл");
+            System.out.println("File not chosen");
             return;
         }
 
