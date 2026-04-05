@@ -17,9 +17,9 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 public class CollectionManager {
-    public Vector<HumanBeing> collection = new Vector<>();
-    public LocalDateTime initTime = LocalDateTime.now();
-    public HashMap<Integer, HumanBeing> IDs = new HashMap<>();
+    private final Vector<HumanBeing> collection = new Vector<>();
+    private final LocalDateTime initTime = LocalDateTime.now();
+    private final Map<Integer, HumanBeing> humansById = new HashMap<>();
     private final InputValidator inputValidator;
     private final HumanBeingParser humanBeingParser;
     private final DefaultRecursionController recursionController;
@@ -37,7 +37,7 @@ public class CollectionManager {
 
     public String clear(){
         collection.clear();
-        IDs.clear();
+        humansById.clear();
         return "Clear command executed successfully";
     }
 
@@ -89,12 +89,12 @@ filter_starts_with_name name : вывести элементы, значение
 
     public String add(HumanBeing human) {
         collection.add(human);
-        IDs.put(human.getId(), human);
+        humansById.put(human.getId(), human);
         nextId = Math.max(nextId, human.getId() + 1);
         return "Element added successfully!";
     }
 
-    public String countGreaterThanCar(Car inputCar){
+    public String countGreaterThanCar(Car inputCar) {
         int count = 0;
         for (HumanBeing human : collection) {
             Car car = human.getCar();
@@ -181,10 +181,10 @@ filter_starts_with_name name : вывести элементы, значение
     }
 
     public String update(long id, HumanBeing updatedHuman) {
-        if (!IDs.containsKey((int)id)) {
+        if (!humansById.containsKey((int) id)) {
             return "Элемент с таким id не найден";
         }
-        HumanBeing human = IDs.get((int)id);
+        HumanBeing human = humansById.get((int) id);
         human.setName(updatedHuman.getName());
         human.setCoordinates(updatedHuman.getCoordinates());
         human.setRealHero(updatedHuman.isRealHero());
@@ -203,7 +203,7 @@ filter_starts_with_name name : вывести элементы, значение
             HumanBeing human = iterator.next();
             if (human.compareTo(example) > 0) {
                 iterator.remove();
-                IDs.remove(human.getId());
+                humansById.remove(human.getId());
                 removed++;
             }
         }
@@ -237,18 +237,18 @@ filter_starts_with_name name : вывести элементы, значение
         }
         HumanBeing humanBeing = collection.get(index);
         collection.remove(index);
-        IDs.remove(humanBeing.getId());
+        humansById.remove(humanBeing.getId());
         return "Элемент на позиции " + index + " удалён";
     }
 
     public String removeById(long parameter) {
         int id = (int) parameter;
-        if (!IDs.containsKey(id)) {
+        if (!humansById.containsKey(id)) {
             return "Элемент с таким ID не найден";
         }
-        HumanBeing humanBeing = IDs.get(id);
+        HumanBeing humanBeing = humansById.get(id);
         collection.remove(humanBeing);
-        IDs.remove(id);
+        humansById.remove(id);
         return "Элемент с id " + id + " успешно удалён";
     }
 
@@ -256,11 +256,11 @@ filter_starts_with_name name : вывести элементы, значение
         this.nextId = nextId;
     }
 
-    public HumanBeing readHumanBeingForAdd() {
+    public HumanBeing createHumanBeingForAdd() {
         return inputValidator.readHumanBeing(nextId);
     }
 
-    public HumanBeing readHumanBeingTemplate() {
+    public HumanBeing createHumanBeingTemplate() {
         return inputValidator.readHumanBeing(0);
     }
 
@@ -286,5 +286,10 @@ filter_starts_with_name name : вывести элементы, значение
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public void addLoadedHumanBeing(HumanBeing humanBeing) {
+        collection.add(humanBeing);
+        humansById.put(humanBeing.getId(), humanBeing);
     }
 }

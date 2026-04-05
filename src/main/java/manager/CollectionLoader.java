@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 public class CollectionLoader {
     private final CollectionManager collectionManager;
-    Gson gson = new GsonBuilder()
+    private final Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
             .setPrettyPrinting()
             .create();
@@ -27,8 +27,7 @@ public class CollectionLoader {
                 try {
                     HumanBeing humanBeing = gson.fromJson(element, HumanBeing.class);
                     if (humanBeing == null) continue;
-                    collectionManager.collection.add(humanBeing);
-                    collectionManager.IDs.put(humanBeing.getId(), humanBeing);
+                    collectionManager.addLoadedHumanBeing(humanBeing);
                     if (humanBeing.getId() > maxId) {
                         maxId = humanBeing.getId();
                     }
