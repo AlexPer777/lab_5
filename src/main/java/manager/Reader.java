@@ -53,13 +53,13 @@ public class Reader {
             }
             case "add" -> {
                 HumanBeing humanBeing = parameter == null
-                        ? collectionManager.readHumanBeingForAdd()
+                        ? collectionManager.createHumanBeingForAdd()
                         : parseHumanBeingForAdd(parameter);
                 return new HumanBeingRequest(command, humanBeing);
             }
             case "remove_greater" -> {
                 HumanBeing humanBeing = parameter == null
-                        ? collectionManager.readHumanBeingTemplate()
+                        ? collectionManager.createHumanBeingTemplate()
                         : parseHumanBeingTemplate(parameter, "remove_greater {element}");
                 return new HumanBeingRequest(command, humanBeing);
             }
@@ -71,7 +71,7 @@ public class Reader {
                 long id = parseLong(parts[0], "update id {element}");
                 HumanBeing humanBeing = parts.length > 1
                         ? parseHumanBeingTemplate(parts[1], "update id {element}")
-                        : collectionManager.readHumanBeingTemplate();
+                        : collectionManager.createHumanBeingTemplate();
                 return new LongAndHumanBeingRequest(command, id, humanBeing);
             }
             case "count_greater_than_car" -> {
