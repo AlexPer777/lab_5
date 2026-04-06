@@ -1,6 +1,7 @@
 package manager;
 
 import executor.CommandExecutor;
+import exceptions.InputCancelledException;
 import exceptions.InputException;
 import model.Car;
 import model.HumanBeing;
@@ -25,7 +26,7 @@ public class Reader {
             }
             read = read.trim();
             return toCommand(buildRequest(read));
-        } catch (InputException e) {
+        } catch (InputCancelledException | InputException e) {
             return new Response(e.getMessage(), ResponseStatus.ERROR, null);
         }
     }

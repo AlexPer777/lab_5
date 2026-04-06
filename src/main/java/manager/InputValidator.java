@@ -1,5 +1,6 @@
 package manager;
 
+import exceptions.InputCancelledException;
 import model.*;
 import java.util.Scanner;
 
@@ -13,7 +14,7 @@ public class InputValidator {
     public String readName() {
         while (true) {
             System.out.println("Введите name:");
-            String name = scanner.nextLine();
+            String name = readLineOrCancel();
             if (name == null || name.isBlank()) {
                 System.out.println("Ошибка: имя не может быть пустым");
             } else {
@@ -25,7 +26,7 @@ public class InputValidator {
     public boolean readBoolean(String message) {
         while (true) {
             System.out.println(message + " (true/false)");
-            String input = scanner.nextLine();
+            String input = readLineOrCancel();
             if (input.equalsIgnoreCase("true") || input.equalsIgnoreCase("false")) {
                 return Boolean.parseBoolean(input);
             }
@@ -37,12 +38,12 @@ public class InputValidator {
         while (true) {
             try {
                 System.out.println("Введите impactSpeed (> -117):");
-                int value = Integer.parseInt(scanner.nextLine());
+                int value = Integer.parseInt(readLineOrCancel());
                 if (value <= -117) {
                     throw new IllegalArgumentException();
                 }
                 return value;
-            } catch (Exception e) {
+            } catch (IllegalArgumentException e) {
                 System.out.println("Ошибка ввода. Попробуйте снова");
             }
         }
@@ -54,11 +55,11 @@ public class InputValidator {
         while (true) {
             try {
                 System.out.println("Введите x:");
-                x = Integer.parseInt(scanner.nextLine());
+                x = Integer.parseInt(readLineOrCancel());
                 System.out.println("Введите y:");
-                y = Long.parseLong(scanner.nextLine());
+                y = Long.parseLong(readLineOrCancel());
                 return new Coordinates(x, y);
-            } catch (Exception e) {
+            } catch (NumberFormatException e) {
                 System.out.println("Ошибка координат. Попробуйте снова");
             }
         }
@@ -68,8 +69,8 @@ public class InputValidator {
         while (true) {
             try {
                 System.out.println("Введите weaponType (HAMMER, AXE, PISTOL, RIFLE, KNIFE):");
-                return WeaponType.valueOf(scanner.nextLine().toUpperCase());
-            } catch (Exception e) {
+                return WeaponType.valueOf(readLineOrCancel().toUpperCase());
+            } catch (IllegalArgumentException e) {
                 System.out.println("Неверный тип оружия.");
             }
         }
@@ -78,12 +79,12 @@ public class InputValidator {
         while (true) {
             try {
                 System.out.println("Введите mood (SORROW, CALM, RAGE) или пусто:");
-                String input = scanner.nextLine();
+                String input = readLineOrCancel();
                 if (input.isBlank()) {
                     return null;
                 }
                 return Mood.valueOf(input.toUpperCase());
-            } catch (Exception e) {
+            } catch (IllegalArgumentException e) {
                 System.out.println("Неверное значение mood.");
             }
         }
@@ -91,7 +92,7 @@ public class InputValidator {
 
     public Car readCar() {
         System.out.println("Введите имя машины:");
-        String name = scanner.nextLine();
+        String name = readLineOrCancel();
         boolean cool = readBoolean("Машина крутая?");
         return new Car(name, cool);
     }
@@ -116,5 +117,12 @@ public class InputValidator {
                 mood,
                 car
         );
+    }
+
+    private String readLineOrCancel() {
+        if (!scanner.hasNextLine()) {
+            throw new InputCancelledException("Ввод данных объекта прерван. Команда отменена.");
+        }
+        return scanner.nextLine();
     }
 }
